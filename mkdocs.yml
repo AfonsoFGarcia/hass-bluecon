@@ -1,0 +1,16 @@
+site_name: BlueCon Home Assistant Integration
+site_url: https://hass-bluecon.afonsogarcia.dev/
+repo_url: https://github.com/AfonsoFGarcia/hass-bluecon
+
+theme: 
+  name: readthedocs
+  include_homepage_in_sidebar: false
+  prev_next_buttons_location: none
+  collapse_navigation: false
+
+nav:
+  - Quickstart: quickstart.md
+
+markdown_extensions:
+  - toc:
+      permalink: "#"
