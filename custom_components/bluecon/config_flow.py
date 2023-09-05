@@ -13,7 +13,7 @@ from bluecon import BlueConAPI, InMemoryOAuthTokenStorage, IOAuthTokenStorage
 from . import DOMAIN
 
 class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
-    VERSION = 2
+    VERSION = 3
 
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         error_info: dict[str, str] = {}
@@ -44,4 +44,4 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
     
     @callback
     def _async_finish_flow(self):
-        return self.async_create_entry(title = DOMAIN, data = {"token": self.__oAuthToken, "credentials": None, "persistentIds": None})
+        return self.async_create_entry(title = DOMAIN, data = {}, options = {"token": self.__oAuthToken, "credentials": None, "persistentIds": None})

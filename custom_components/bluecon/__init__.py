@@ -61,7 +61,11 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
             "credentials": credentials,
             "persistentIds": persistentIds
         }
-        config_entry.version = 2
-        hass.config_entries.async_update_entry(config_entry, data=new)
+        config_entry.version = 3
+        hass.config_entries.async_update_entry(config_entry, data={}, options=new)
+    if config_entry.version == 2:
+        new = {**config_entry.data}
+        config_entry.version = 3
+        hass.config_entries.async_update_entry(config_entry, data={}, options=new)
     
     return True
