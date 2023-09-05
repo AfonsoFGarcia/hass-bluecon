@@ -55,4 +55,8 @@ async def async_setup(hass, config):
         discovery.async_load_platform(hass, Platform.CAMERA, DOMAIN, {}, config)
     )
 
+    hass.async_create_task(
+        discovery.async_load_platform(hass, Platform.SENSOR, DOMAIN, {}, config)
+    )
+
     return True
