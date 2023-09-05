@@ -1,10 +1,10 @@
 {
     "domain": "bluecon",
     "name": "Fermax Blue",
-    "version": "0.0.3",
+    "version": "0.1.0",
     "documentation": "https://hass-bluecon.afonsogarcia.dev/",
     "issue_tracker": "https://github.com/AfonsoFGarcia/hass-bluecon/issues",
-    "requirements": ["bluecon==0.0.1a9", "aiohttp", "oscrypto", "protobuf", "http-ece"],
+    "requirements": ["bluecon==0.1.0", "aiohttp", "oscrypto", "protobuf", "http-ece"],
     "codeowners": ["@AfonsoFGarcia"],
     "config_flow": true
 }

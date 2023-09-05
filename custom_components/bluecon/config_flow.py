@@ -44,4 +44,4 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
     
     @callback
     def _async_finish_flow(self):
-        return self.async_create_entry(title = DOMAIN, data = {"token": self.__oAuthToken})
+        return self.async_create_entry(title = DOMAIN, data = {"token": self.__oAuthToken, "credentials": None, "persistentIds": None})
