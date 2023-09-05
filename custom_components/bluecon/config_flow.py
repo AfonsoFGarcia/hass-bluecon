@@ -1,19 +1,20 @@
 from typing import Any
-from homeassistant.config_entries import ConfigFlow
+from homeassistant.config_entries import ConfigFlow, ConfigEntry
 from homeassistant.data_entry_flow import FlowResult, AbortFlow
 from homeassistant.const import (
     CONF_USERNAME,
     CONF_PASSWORD
 )
-from homeassistant.core import callback
+from homeassistant.core import callback, HomeAssistant
 import voluptuous as vol
+import json
 
 from bluecon import BlueConAPI, InMemoryOAuthTokenStorage, IOAuthTokenStorage
 
 from . import DOMAIN
 
 class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
-    VERSION = 1
+    VERSION = 2
 
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         error_info: dict[str, str] = {}
@@ -45,3 +46,28 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
     @callback
     def _async_finish_flow(self):
         return self.async_create_entry(title = DOMAIN, data = {"token": self.__oAuthToken, "credentials": None, "persistentIds": None})
+    
+    async def async_migrate_entity(hass: HomeAssistant, config_entry: ConfigEntry):
+        if config_entry.version == 1:
+            try:
+                with open("credentials.json", "r") as f:
+                    credentials = json.load(f)
+            except FileNotFoundError:
+                credentials = None
+            
+            try:
+                with open("persistent_ids.txt", "r") as f:
+                    persistentIds = [x.strip() for x in f]
+            except FileNotFoundError:
+                persistentIds = None
+            
+            new = {
+                **config_entry.data,
+                "credentials": credentials,
+                "persistentIds": persistentIds
+            }
+            config_entry.version = 2
+            hass.config_entries.async_update_entry(config_entry, data=new)
+        
+        return True
+
