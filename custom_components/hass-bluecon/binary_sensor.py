@@ -22,7 +22,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info 
             BlueConConnectionStatusBinarySensor(
                 bluecon,
                 pairing.deviceId,
-                deviceInfo.connectionState
+                deviceInfo
             )
         )
 
@@ -33,7 +33,8 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info 
                     accessDoorName,
                     accessDoor.block,
                     accessDoor.subBlock,
-                    accessDoor.number
+                    accessDoor.number,
+                    deviceInfo
                 )
             )
     
@@ -42,7 +43,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info 
 class BlueConCallStatusBinarySensor(BinarySensorEntity):
     _attr_should_poll = False
 
-    def __init__(self, deviceId, accessDoorName, block, subBlock, number):
+    def __init__(self, deviceId, accessDoorName, block, subBlock, number, deviceInfo):
         self.lockId = f'{deviceId}_{accessDoorName}'
         self.deviceId = deviceId
         self.accessDoorName = accessDoorName
@@ -52,6 +53,7 @@ class BlueConCallStatusBinarySensor(BinarySensorEntity):
         self._attr_unique_id = f'{self.lockId}_call_status'.lower()
         self.entity_id = f'{DOMAIN}.{self._attr_unique_id}'.lower()
         self._attr_is_on = False
+        self.__model = f'{deviceInfo.type} {deviceInfo.subType} {deviceInfo.family}'
     
     @property
     def unique_id(self) -> str | None:
@@ -85,21 +87,22 @@ class BlueConCallStatusBinarySensor(BinarySensorEntity):
             identifiers = {
                 (DOMAIN, self.deviceId)
             },
-            name = f'Fermax Blue {self.deviceId}',
+            name = f'{self.__model} {self.deviceId}',
             manufacturer = 'Fermax',
-            model = 'Blue',
+            model = self.__model,
             sw_version = '0.0.1'
         )
 
 class BlueConConnectionStatusBinarySensor(BinarySensorEntity):
     _attr_should_poll = True
 
-    def __init__(self, bluecon, deviceId, initialConnectionState):
+    def __init__(self, bluecon, deviceId, deviceInfo):
         self.__bluecon : BlueConAPI = bluecon
         self.deviceId = deviceId
         self._attr_unique_id = f'{self.deviceId}_connection_status'.lower()
         self.entity_id = f'{DOMAIN}.{self._attr_unique_id}'.lower()
-        self._attr_is_on = initialConnectionState == STATE_CONNECTED
+        self._attr_is_on = deviceInfo is not None and deviceInfo.connectionState == STATE_CONNECTED
+        self.__model = f'{deviceInfo.type} {deviceInfo.subType} {deviceInfo.family}'
     
     @property
     def unique_id(self) -> str | None:
@@ -115,12 +118,12 @@ class BlueConConnectionStatusBinarySensor(BinarySensorEntity):
             identifiers = {
                 (DOMAIN, self.deviceId)
             },
-            name = f'Fermax Blue {self.deviceId}',
+            name = f'{self.__model} {self.deviceId}',
             manufacturer = 'Fermax',
-            model = 'Blue',
+            model = self.__model,
             sw_version = '0.0.1'
         )
 
     async def async_update(self):
         deviceInfo = await self.__bluecon.getDeviceInfo(self.deviceId)
-        self._attr_is_on = deviceInfo.connectionState == STATE_CONNECTED
+        self._attr_is_on = deviceInfo is not None and deviceInfo.connectionState == STATE_CONNECTED

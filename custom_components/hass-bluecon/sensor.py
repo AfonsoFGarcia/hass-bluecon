@@ -25,7 +25,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info 
             BlueConWifiStrenghtSensor(
                 bluecon,
                 pairing.deviceId,
-                deviceInfo.wirelessSignal
+                deviceInfo
             )
         )
     
@@ -34,13 +34,14 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info 
 class BlueConWifiStrenghtSensor(SensorEntity):
     _attr_should_poll = True
 
-    def __init__(self, bluecon, deviceId, initialWifiState):
+    def __init__(self, bluecon, deviceId, deviceInfo):
         self.__bluecon : BlueConAPI = bluecon
         self.deviceId = deviceId
         self._attr_unique_id = f'{self.deviceId}_connection_status'.lower()
         self.entity_id = f'{DOMAIN}.{self._attr_unique_id}'.lower()
         self._attr_options = [SIGNAL_TERRIBLE, SIGNAL_BAD, SIGNAL_WEAK, SIGNAL_GOOD, SIGNAL_EXCELENT, SIGNAL_UNKNOWN]
-        self._attr_native_value = getWirelessSignalText(initialWifiState)
+        self._attr_native_value = getWirelessSignalText(deviceInfo.wirelessSignal)
+        self.__model = f'{deviceInfo.type} {deviceInfo.subType} {deviceInfo.family}'
     
     @property
     def unique_id(self) -> str | None:
@@ -56,9 +57,9 @@ class BlueConWifiStrenghtSensor(SensorEntity):
             identifiers = {
                 (DOMAIN, self.deviceId)
             },
-            name = f'Fermax Blue {self.deviceId}',
+            name = f'{self.__model} {self.deviceId}',
             manufacturer = 'Fermax',
-            model = 'Blue',
+            model = self.__model,
             sw_version = '0.0.1'
         )
 

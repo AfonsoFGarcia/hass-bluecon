@@ -12,32 +12,34 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info 
 
     pairings = await bluecon.getPairings()
 
-    locks = []
+    cameras = []
 
     for pairing in pairings:
         deviceInfo = await bluecon.getDeviceInfo(pairing.deviceId)
         if deviceInfo.photoCaller:
             image = await bluecon.getLastPicture(pairing.deviceId)
-            locks.append(
+            cameras.append(
                 BlueConStillCamera(
                     bluecon,
                     pairing.deviceId,
-                    image
+                    image,
+                    deviceInfo
                 )
             )
     
-    async_add_entities(locks)
+    async_add_entities(cameras)
 
 class BlueConStillCamera(Camera):
     _attr_should_poll = False
 
-    def __init__(self, bluecon: BlueConAPI, deviceId, image: bytes | None):
+    def __init__(self, bluecon: BlueConAPI, deviceId, image: bytes | None, deviceInfo):
         super().__init__()
         self.bluecon = bluecon
         self.deviceId = deviceId
         self._attr_unique_id = f'{self.deviceId}_last_still'.lower()
         self.entity_id = f'{DOMAIN}.{self._attr_unique_id}'.lower()
         self.__image: bytes | None = image
+        self.__model = f'{deviceInfo.type} {deviceInfo.subType} {deviceInfo.family}'
 
     async def async_added_to_hass(self) -> None:
         self.async_on_remove(
@@ -55,9 +57,9 @@ class BlueConStillCamera(Camera):
             identifiers = {
                 (DOMAIN, self.deviceId)
             },
-            name = f'Fermax Blue {self.deviceId}',
+            name = f'{self.__model} {self.deviceId}',
             manufacturer = 'Fermax',
-            model = 'Blue',
+            model = self.__model,
             sw_version = '0.0.1'
         )
     

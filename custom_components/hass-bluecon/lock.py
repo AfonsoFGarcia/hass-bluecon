@@ -21,13 +21,15 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info 
     locks = []
 
     for pairing in pairings:
+        deviceInfo = await bluecon.getDeviceInfo(pairing.deviceId)
         for accessDoorName, accessDoor in pairing.accessDoorMap.items():
             locks.append(
                 BlueConLock(
                     bluecon,
                     pairing.deviceId,
                     accessDoorName,
-                    accessDoor
+                    accessDoor,
+                    deviceInfo
                 )
             )
     
@@ -36,7 +38,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info 
 class BlueConLock(LockEntity):
     _attr_should_poll = False
 
-    def __init__(self, bluecon: BlueConAPI, deviceId, accessDoorName, accessDoor):
+    def __init__(self, bluecon: BlueConAPI, deviceId, accessDoorName, accessDoor, deviceInfo):
         self.bluecon = bluecon
         self.lockId = f'{deviceId}_{accessDoorName}'
         self.deviceId = deviceId
@@ -45,6 +47,7 @@ class BlueConLock(LockEntity):
         self._attr_unique_id = f'{self.lockId}_door_lock'.lower()
         self.entity_id = f'{DOMAIN}.{self._attr_unique_id}'.lower()
         self._state = STATE_LOCKED
+        self.__model = f'{deviceInfo.type} {deviceInfo.subType} {deviceInfo.family}'
     
     @property
     def is_locking(self) -> bool:
@@ -89,8 +92,8 @@ class BlueConLock(LockEntity):
             identifiers = {
                 (DOMAIN, self.deviceId)
             },
-            name = f'Fermax Blue {self.deviceId}',
+            name = f'{self.__model} {self.deviceId}',
             manufacturer = 'Fermax',
-            model = 'Blue',
+            model = self.__model,
             sw_version = '0.0.1'
         )
