@@ -15,14 +15,16 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info 
     locks = []
 
     for pairing in pairings:
-        image = await bluecon.getLastPicture(pairing.deviceId)
-        locks.append(
-            BlueConStillCamera(
-                bluecon,
-                pairing.deviceId,
-                image
+        deviceInfo = await bluecon.getDeviceInfo(pairing.deviceId)
+        if deviceInfo.photoCaller:
+            image = await bluecon.getLastPicture(pairing.deviceId)
+            locks.append(
+                BlueConStillCamera(
+                    bluecon,
+                    pairing.deviceId,
+                    image
+                )
             )
-        )
     
     async_add_entities(locks)
 

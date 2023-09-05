@@ -87,9 +87,9 @@ class BlueConLock(LockEntity):
     def device_info(self) -> DeviceInfo | None:
         return DeviceInfo(
             identifiers = {
-                (DOMAIN, self.lockId)
+                (DOMAIN, self.deviceId)
             },
-            name = f'Fermax Blue {self.lockId}',
+            name = f'Fermax Blue {self.deviceId}',
             manufacturer = 'Fermax',
             model = 'Blue',
             sw_version = '0.0.1'

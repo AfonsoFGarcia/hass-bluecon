@@ -2,16 +2,30 @@ from homeassistant.components.binary_sensor import BinarySensorDeviceClass, Bina
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import DeviceInfo
+from bluecon import BlueConAPI
+
 from .const import DOMAIN, SIGNAL_CALL_ENDED, SIGNAL_CALL_STARTED
 
+STATE_CONNECTED = "Connected"
+
 async def async_setup_platform(hass, config, async_add_entities, discovery_info = None):
-    bluecon = hass.data[DOMAIN]["bluecon"]
+    bluecon: BlueConAPI = hass.data[DOMAIN]["bluecon"]
 
     pairings = await bluecon.getPairings()
 
     sensors = []
 
     for pairing in pairings:
+        deviceInfo = await bluecon.getDeviceInfo(pairing.deviceId)
+
+        sensors.append(
+            BlueConConnectionStatusBinarySensor(
+                bluecon,
+                pairing.deviceId,
+                deviceInfo.connectionState
+            )
+        )
+
         for accessDoorName, accessDoor in pairing.accessDoorMap.items():
             sensors.append(
                 BlueConCallStatusBinarySensor(
@@ -69,10 +83,44 @@ class BlueConCallStatusBinarySensor(BinarySensorEntity):
     def device_info(self) -> DeviceInfo | None:
         return DeviceInfo(
             identifiers = {
-                (DOMAIN, self.lockId)
+                (DOMAIN, self.deviceId)
             },
-            name = f'Fermax Blue {self.lockId}',
+            name = f'Fermax Blue {self.deviceId}',
             manufacturer = 'Fermax',
             model = 'Blue',
             sw_version = '0.0.1'
         )
+
+class BlueConConnectionStatusBinarySensor(BinarySensorEntity):
+    _attr_should_poll = True
+
+    def __init__(self, bluecon, deviceId, initialConnectionState):
+        self.__bluecon : BlueConAPI = bluecon
+        self.deviceId = deviceId
+        self._attr_unique_id = f'{self.deviceId}_connection_status'.lower()
+        self.entity_id = f'{DOMAIN}.{self._attr_unique_id}'.lower()
+        self._attr_is_on = initialConnectionState == STATE_CONNECTED
+    
+    @property
+    def unique_id(self) -> str | None:
+        return self.entity_id
+    
+    @property
+    def device_class(self) -> BinarySensorDeviceClass | None:
+        return BinarySensorDeviceClass.CONNECTIVITY
+    
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        return DeviceInfo(
+            identifiers = {
+                (DOMAIN, self.deviceId)
+            },
+            name = f'Fermax Blue {self.deviceId}',
+            manufacturer = 'Fermax',
+            model = 'Blue',
+            sw_version = '0.0.1'
+        )
+
+    async def async_update(self):
+        deviceInfo = await self.__bluecon.getDeviceInfo(self.deviceId)
+        self._attr_is_on = deviceInfo.connectionState == STATE_CONNECTED

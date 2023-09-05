@@ -3,6 +3,6 @@
     "name": "Fermax Blue",
     "version": "0.0.2",
     "documentation": "https://hass-bluecon.afonsogarcia.dev/",
-    "requirements": ["bluecon==0.0.1a6", "aiohttp", "oscrypto", "protobuf", "http-ece"],
+    "requirements": ["bluecon==0.0.1a8", "aiohttp", "oscrypto", "protobuf", "http-ece"],
     "codeowners": ["@AfonsoFGarcia"]
 }
