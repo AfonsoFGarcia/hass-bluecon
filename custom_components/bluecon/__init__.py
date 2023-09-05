@@ -6,6 +6,7 @@ from homeassistant.helpers.dispatcher import dispatcher_send
 from bluecon import BlueConAPI, INotification, CallNotification, CallEndNotification
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
+import json
 
 
 PLATFORMS: list[str] = [Platform.BINARY_SENSOR, Platform.LOCK, Platform.CAMERA, Platform.SENSOR]
@@ -40,3 +41,27 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.data[DOMAIN].pop(entry.entry_id)
     
     return unload_ok
+
+async def async_migrate_entity(hass: HomeAssistant, config_entry: ConfigEntry):
+    if config_entry.version == 1:
+        try:
+            with open("credentials.json", "r") as f:
+                credentials = json.load(f)
+        except FileNotFoundError:
+            credentials = None
+        
+        try:
+            with open("persistent_ids.txt", "r") as f:
+                persistentIds = [x.strip() for x in f]
+        except FileNotFoundError:
+            persistentIds = None
+        
+        new = {
+            **config_entry.data,
+            "credentials": credentials,
+            "persistentIds": persistentIds
+        }
+        config_entry.version = 2
+        hass.config_entries.async_update_entry(config_entry, data=new)
+    
+    return True
