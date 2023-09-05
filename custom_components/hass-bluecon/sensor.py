@@ -4,12 +4,12 @@ from bluecon import BlueConAPI
 
 from .const import DOMAIN
 
-SIGNAL_TERRIBLE = "Terrible"
-SIGNAL_BAD = "Bad"
-SIGNAL_WEAK = "Weak"
-SIGNAL_GOOD = "Good"
-SIGNAL_EXCELENT = "Excelent"
-SIGNAL_UNKNOWN = "Unknown"
+SIGNAL_TERRIBLE = "terrible"
+SIGNAL_BAD = "bad"
+SIGNAL_WEAK = "weak"
+SIGNAL_GOOD = "good"
+SIGNAL_EXCELENT = "excelent"
+SIGNAL_UNKNOWN = "unknown"
 
 async def async_setup_entry(hass, config, async_add_entities):
     bluecon: BlueConAPI = hass.data[DOMAIN]["bluecon"]
@@ -42,7 +42,8 @@ class BlueConWifiStrenghtSensor(SensorEntity):
         self._attr_options = [SIGNAL_TERRIBLE, SIGNAL_BAD, SIGNAL_WEAK, SIGNAL_GOOD, SIGNAL_EXCELENT, SIGNAL_UNKNOWN]
         self._attr_native_value = getWirelessSignalText(deviceInfo.wirelessSignal)
         self.__model = f'{deviceInfo.type} {deviceInfo.subType} {deviceInfo.family}'
-    
+        self._attr_translation_key = "wifi-state"
+
     @property
     def unique_id(self) -> str | None:
         return self.entity_id
