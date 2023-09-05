@@ -22,7 +22,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         "bluecon": None
     }
 
-    bluecon = BlueConAPI.create_already_authed(notification_callback, ConfigEntryOAuthTokenStorage(entry), ConfigEntryNotificationInfoStorage(entry))
+    bluecon = BlueConAPI.create_already_authed(notification_callback, ConfigEntryOAuthTokenStorage(hass, entry), ConfigEntryNotificationInfoStorage(hass, entry))
     await hass.async_add_executor_job(bluecon.startNotificationListener)
 
     async def cleanup(event):
