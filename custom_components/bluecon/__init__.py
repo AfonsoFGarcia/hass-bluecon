@@ -42,7 +42,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     
     return unload_ok
 
-async def async_migrate_entity(hass: HomeAssistant, config_entry: ConfigEntry):
+async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
     if config_entry.version == 1:
         try:
             with open("credentials.json", "r") as f:
