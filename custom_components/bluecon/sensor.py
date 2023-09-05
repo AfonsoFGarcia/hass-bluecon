@@ -12,7 +12,7 @@ SIGNAL_EXCELENT = "excelent"
 SIGNAL_UNKNOWN = "unknown"
 
 async def async_setup_entry(hass, config, async_add_entities):
-    bluecon: BlueConAPI = hass.data[DOMAIN]["bluecon"]
+    bluecon: BlueConAPI = hass.data[DOMAIN][config.entry_id]
 
     pairings = await bluecon.getPairings()
 

@@ -14,7 +14,7 @@ from bluecon import BlueConAPI
 LOCK_UNLOCK_DELAY = 5
 
 async def async_setup_entry(hass, config, async_add_entities):
-    bluecon = hass.data[DOMAIN]["bluecon"]
+    bluecon = hass.data[DOMAIN][config.entry_id]
 
     pairings = await bluecon.getPairings()
 

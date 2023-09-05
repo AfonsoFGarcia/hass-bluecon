@@ -8,7 +8,7 @@ from bluecon import BlueConAPI
 from .const import DOMAIN, SIGNAL_CALL_ENDED
 
 async def async_setup_entry(hass, config, async_add_entities):
-    bluecon : BlueConAPI = hass.data[DOMAIN]["bluecon"]
+    bluecon : BlueConAPI = hass.data[DOMAIN][config.entry_id]
 
     pairings = await bluecon.getPairings()
 

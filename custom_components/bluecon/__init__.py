@@ -7,7 +7,9 @@ from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+PLATFORMS: list[str] = [Platform.BINARY_SENSOR, Platform.LOCK, Platform.CAMERA, Platform.SENSOR]
+
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     def notification_callback(notification: INotification):
         if type(notification) is CallNotification:
             dispatcher_send(hass, SIGNAL_CALL_STARTED.format(notification.deviceId, notification.accessDoorKey))
@@ -25,9 +27,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         await bluecon.stopNotificationListener()
     
     hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, cleanup)
-    hass.data[DOMAIN]["bluecon"] = bluecon
+    hass.data[DOMAIN][entry.entry_id] = bluecon
 
-    await hass.config_entries.async_forward_entry_setups(entry, [Platform.BINARY_SENSOR, Platform.LOCK, Platform.CAMERA, Platform.SENSOR])
-    entry.async_on_unload(cleanup)
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     return True
+
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    if unload_ok:
+        hass.data[DOMAIN].pop(entry.entry_id)
+    
+    return unload_ok

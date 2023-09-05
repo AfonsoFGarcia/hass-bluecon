@@ -1,6 +1,6 @@
 from typing import Any
 from homeassistant.config_entries import ConfigFlow
-from homeassistant.data_entry_flow import FlowResult
+from homeassistant.data_entry_flow import FlowResult, AbortFlow
 from homeassistant.const import (
     CONF_USERNAME,
     CONF_PASSWORD
@@ -28,6 +28,8 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
                 self._abort_if_unique_id_configured(updates = {"token": self.__oAuthToken})
                 
                 return self._async_finish_flow()
+            except AbortFlow as e:
+                raise e
             except Exception:
                 error_info['base'] = 'invalid_auth'
         
