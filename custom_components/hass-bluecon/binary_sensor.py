@@ -45,7 +45,7 @@ class BlueConCallStatusBinarySensor(BinarySensorEntity):
     
     @property
     def device_class(self) -> BinarySensorDeviceClass | None:
-        return BinarySensorDeviceClass.RUNNING
+        return BinarySensorDeviceClass.CONNECTIVITY
 
     async def async_added_to_hass(self) -> None:
         self.async_on_remove(

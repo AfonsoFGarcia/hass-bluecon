@@ -35,15 +35,12 @@ async def async_setup(hass, config):
     }
 
     bluecon = await BlueConAPI.create(username, password, notification_callback, HassDataOAuthTokenStorage(hass))
+    await hass.async_add_executor_job(bluecon.startNotificationListener)
 
     async def cleanup(event):
         await bluecon.stopNotificationListener()
     
-    async def prepare(event):
-        await hass.async_add_executor_job(bluecon.startNotificationListener)
-        hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, cleanup)
-    
-    hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, prepare)
+    hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, cleanup)
     hass.data[DOMAIN]["bluecon"] = bluecon
 
     hass.async_create_task(
@@ -52,6 +49,10 @@ async def async_setup(hass, config):
 
     hass.async_create_task(
         discovery.async_load_platform(hass, Platform.LOCK, DOMAIN, {}, config)
+    )
+
+    hass.async_create_task(
+        discovery.async_load_platform(hass, Platform.CAMERA, DOMAIN, {}, config)
     )
 
     return True
