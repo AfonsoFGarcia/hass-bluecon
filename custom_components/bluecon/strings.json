@@ -16,6 +16,17 @@
       "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Integration Settings",
+        "data": {
+          "lockStateReset": "Lock state reset timer"
+        },
+        "description": "Time to reset the lock back to locked once it is unlocked, in seconds."
+      }
+    }
+  },
   "entity": {
       "sensor": {
           "wifi-state": {

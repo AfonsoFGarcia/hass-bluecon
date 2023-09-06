@@ -1,5 +1,5 @@
 {
   "name": "HASS-BlueCon",
   "render_readme": true,
-  "hide_default_branch": true
+  "hide_default_branch": false
 }

@@ -1,5 +1,5 @@
 from typing import Any
-from homeassistant.config_entries import ConfigFlow
+from homeassistant.config_entries import ConfigFlow, OptionsFlow, ConfigEntry
 from homeassistant.data_entry_flow import FlowResult, AbortFlow
 from homeassistant.const import (
     CONF_USERNAME,
@@ -10,10 +10,12 @@ import voluptuous as vol
 
 from bluecon import BlueConAPI, InMemoryOAuthTokenStorage, IOAuthTokenStorage
 
+from custom_components.bluecon.const import CONF_LOCK_STATE_RESET
+
 from . import DOMAIN
 
 class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
-    VERSION = 4
+    VERSION = 5
 
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         error_info: dict[str, str] = {}
@@ -26,7 +28,7 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
                 await self.async_set_unique_id(user_input[CONF_USERNAME])
                 self._abort_if_unique_id_configured()
                 
-                return self._async_finish_flow()
+                return self.async_create_entry(title = user_input[CONF_USERNAME], data = {}, options = {})
             except AbortFlow as e:
                 raise e
             except Exception:
@@ -41,6 +43,26 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
             errors = error_info
         )
     
+    @staticmethod
     @callback
-    def _async_finish_flow(self):
-        return self.async_create_entry(title = DOMAIN, data = {}, options = {})
+    def async_get_options_flow(config_entry):
+        """Get the options flow for this handler."""
+        return BlueConOptionsFlow(config_entry)
+
+class BlueConOptionsFlow(OptionsFlow):
+    def __init__(self, config_entry: ConfigEntry) -> None:
+        self.config_entry = config_entry
+    
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        error_info: dict[str, str] = {}
+
+        if user_input is not None:
+            self.async_create_entry(title="", data=user_input)
+        
+        return self.async_show_form(
+            step_id = "init", 
+            data_schema = vol.Schema({
+                vol.Required(CONF_LOCK_STATE_RESET, default = 5): int
+            }),
+            errors=error_info
+        )

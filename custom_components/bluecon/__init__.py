@@ -1,7 +1,8 @@
 import json
-from .const import DOMAIN, SIGNAL_CALL_ENDED, SIGNAL_CALL_STARTED
+from .const import CONF_LOCK_STATE_RESET, DOMAIN, SIGNAL_CALL_ENDED, SIGNAL_CALL_STARTED
 from .ConfigFolderOAuthTokenStorage import ConfigFolderOAuthTokenStorage
 from .ConfigFolderNotificationInfoStorage import ConfigFolderNotificationInfoStorage
+from .config_flow import BlueConConfigFlow
 from homeassistant.const import EVENT_HOMEASSISTANT_STOP, Platform
 from homeassistant.helpers.dispatcher import dispatcher_send
 from bluecon import BlueConAPI, INotification, CallNotification, CallEndNotification, IOAuthTokenStorage, INotificationInfoStorage, OAuthToken
@@ -64,9 +65,7 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         tempNotificationInfoStorage.storeCredentials(credentials)
         for persistentId in persistentIds:
             tempNotificationInfoStorage.storePersistentId(persistentId)
-
-        config_entry.version = 4
-        hass.config_entries.async_update_entry(config_entry, data={}, options={})
+        
     if config_entry.version == 2:
         
         tempOAuthTokenStorage.storeOAuthToken(OAuthToken.fromJson(config_entry.data["token"]))
@@ -74,15 +73,14 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         for persistentId in config_entry.data["persistentIds"]:
             tempNotificationInfoStorage.storePersistentId(persistentId)
 
-        config_entry.version = 3
-        hass.config_entries.async_update_entry(config_entry, data={}, options={})
     if config_entry.version == 3:
         tempOAuthTokenStorage.storeOAuthToken(OAuthToken.fromJson(config_entry.options["token"]))
         tempNotificationInfoStorage.storeCredentials(config_entry.options["credentials"])
         for persistentId in config_entry.options["persistentIds"]:
             tempNotificationInfoStorage.storePersistentId(persistentId)
 
-        config_entry.version = 4
-        hass.config_entries.async_update_entry(config_entry, data = {}, options = {})
+    if config_entry.version < BlueConConfigFlow.VERSION:
+        config_entry.version = BlueConConfigFlow.VERSION
+        hass.config_entries.async_update_entry(config_entry, data = {}, options = { CONF_LOCK_STATE_RESET: 5 })
     
     return True
