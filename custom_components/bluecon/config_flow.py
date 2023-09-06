@@ -29,7 +29,7 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
                 
                 return self._async_finish_flow()
             except AbortFlow as e:
-                entry = self.hass.config_entries.async_get_entry(user_input[CONF_USERNAME])
+                entry = next(e for e in self.hass.config_entries.async_entries(DOMAIN) if e.unique_id == user_input[CONF_USERNAME])
                 self.hass.config_entries.async_update_entry(
                     entry, options={**entry.options, **{"token": self.__oAuthToken}}
                 )
