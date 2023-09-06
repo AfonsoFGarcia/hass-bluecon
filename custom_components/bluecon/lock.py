@@ -1,5 +1,5 @@
 import asyncio
-from .const import DOMAIN
+from .const import DOMAIN, CONF_LOCK_STATE_RESET
 from homeassistant.components.lock import LockEntity
 from homeassistant.const import (
     STATE_JAMMED,
@@ -9,12 +9,13 @@ from homeassistant.const import (
     STATE_UNLOCKING,
 )
 from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.core import HomeAssistant
+from homeassistant.config_entries import ConfigEntry
 from bluecon import BlueConAPI
 
-LOCK_UNLOCK_DELAY = 5
-
-async def async_setup_entry(hass, config, async_add_entities):
+async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry, async_add_entities):
     bluecon = hass.data[DOMAIN][config.entry_id]
+    lockTimeout = config.options[CONF_LOCK_STATE_RESET]
 
     pairings = await bluecon.getPairings()
 
@@ -29,7 +30,8 @@ async def async_setup_entry(hass, config, async_add_entities):
                     pairing.deviceId,
                     accessDoorName,
                     accessDoor,
-                    deviceInfo
+                    deviceInfo,
+                    lockTimeout
                 )
             )
     
@@ -38,7 +40,7 @@ async def async_setup_entry(hass, config, async_add_entities):
 class BlueConLock(LockEntity):
     _attr_should_poll = False
 
-    def __init__(self, bluecon: BlueConAPI, deviceId, accessDoorName, accessDoor, deviceInfo):
+    def __init__(self, bluecon: BlueConAPI, deviceId, accessDoorName, accessDoor, deviceInfo, lockTimeout):
         self.bluecon = bluecon
         self.lockId = f'{deviceId}_{accessDoorName}'
         self.deviceId = deviceId
@@ -47,7 +49,8 @@ class BlueConLock(LockEntity):
         self._attr_unique_id = f'{self.lockId}_door_lock'.lower()
         self.entity_id = f'{DOMAIN}.{self._attr_unique_id}'.lower()
         self._state = STATE_LOCKED
-        self.__model = f'{deviceInfo.type} {deviceInfo.subType} {deviceInfo.family}'
+        self.__model = f'{deviceInfo.type} {deviceInfo.subType} {deviceInfo.family}',
+        self.__lockTimeout = lockTimeout
     
     @property
     def is_locking(self) -> bool:
@@ -79,7 +82,7 @@ class BlueConLock(LockEntity):
         await self.bluecon.openDoor(self.deviceId, self.accessDoor)
         self._state = STATE_UNLOCKED
         self.async_schedule_update_ha_state(True)
-        await asyncio.sleep(LOCK_UNLOCK_DELAY)
+        await asyncio.sleep(self.__lockTimeout)
         self._state = STATE_LOCKED
         self.async_schedule_update_ha_state(True)
 
