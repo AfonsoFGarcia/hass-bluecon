@@ -18,7 +18,7 @@ class ConfigFolderNotificationInfoStorage(INotificationInfoStorage):
             return None
     
     def storeCredentials(self, credentials: dict[str, dict[str, Any]]):
-        with open(self.__credentialsFileName, "w") as f:
+        with open(self.__credentialsFileName, "w+") as f:
             json.dump(credentials, f)
     
     def retrievePersistentIds(self) -> list[str] | None:
@@ -29,5 +29,5 @@ class ConfigFolderNotificationInfoStorage(INotificationInfoStorage):
             return None
     
     def storePersistentId(self, persistentId: str):
-        with open(self.__persistentIdsFileName, "a") as f:
+        with open(self.__persistentIdsFileName, "a+") as f:
             f.write(persistentId + "\n")
