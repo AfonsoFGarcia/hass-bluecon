@@ -25,10 +25,14 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
                 self.__oAuthToken = tokenStorage.retrieveOAuthToken().toJson()
 
                 await self.async_set_unique_id(user_input[CONF_USERNAME])
-                self._abort_if_unique_id_configured(updates = {"token": self.__oAuthToken})
+                self._abort_if_unique_id_configured()
                 
                 return self._async_finish_flow()
             except AbortFlow as e:
+                entry = self.hass.config_entries.async_get_entry(user_input[CONF_USERNAME])
+                self.hass.config_entries.async_update_entry(
+                    entry, options={**entry.options, **{"token": self.__oAuthToken}}
+                )
                 raise e
             except Exception:
                 error_info['base'] = 'invalid_auth'

@@ -7,6 +7,10 @@ from bluecon import BlueConAPI, INotification, CallNotification, CallEndNotifica
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.config_entries import ConfigEntry
 import json
+import logging
+
+
+_LOGGER = logging.getLogger(__name__)
 
 
 PLATFORMS: list[str] = [Platform.BINARY_SENSOR, Platform.LOCK, Platform.CAMERA, Platform.SENSOR]
@@ -31,6 +35,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     @callback
     async def updateConfigEntry(event):
+        _LOGGER.warning(f"Updating config entry {entry.entry_id}")
         hass.config_entries.async_update_entry(entry, options=event.data)
     
     hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, cleanup)
