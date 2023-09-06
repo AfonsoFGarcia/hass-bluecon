@@ -1,10 +1,10 @@
-from .const import DOMAIN, SIGNAL_CALL_ENDED, SIGNAL_CALL_STARTED
+from .const import DOMAIN, SIGNAL_CALL_ENDED, SIGNAL_CALL_STARTED, SIGNAL_ENTITY_UPDATED
 from .ConfigEntryOAuthTokenStorage import ConfigEntryOAuthTokenStorage
 from .ConfigEntryNotificationInfoStorage import ConfigEntryNotificationInfoStorage
 from homeassistant.const import EVENT_HOMEASSISTANT_STOP, Platform
 from homeassistant.helpers.dispatcher import dispatcher_send
 from bluecon import BlueConAPI, INotification, CallNotification, CallEndNotification
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.config_entries import ConfigEntry
 import json
 
@@ -25,10 +25,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     bluecon = BlueConAPI.create_already_authed(notification_callback, ConfigEntryOAuthTokenStorage(hass, entry), ConfigEntryNotificationInfoStorage(hass, entry))
     await hass.async_add_executor_job(bluecon.startNotificationListener)
 
+    @callback
     async def cleanup(event):
         await bluecon.stopNotificationListener()
+
+    @callback
+    async def updateConfigEntry(event):
+        hass.config_entries.async_update_entry(entry, options=event.data)
     
     hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, cleanup)
+    hass.bus.async_listen(SIGNAL_ENTITY_UPDATED.format(entry.entry_id), updateConfigEntry)
     hass.data[DOMAIN][entry.entry_id] = bluecon
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
