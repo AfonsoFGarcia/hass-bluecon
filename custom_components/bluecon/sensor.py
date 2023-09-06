@@ -2,7 +2,7 @@ from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.helpers.entity import DeviceInfo
 from bluecon import BlueConAPI
 
-from .const import DOMAIN
+from .const import DEVICE_MANUFACTURER, DOMAIN, HASS_BLUECON_VERSION
 
 SIGNAL_TERRIBLE = "terrible"
 SIGNAL_BAD = "bad"
@@ -59,9 +59,9 @@ class BlueConWifiStrenghtSensor(SensorEntity):
                 (DOMAIN, self.deviceId)
             },
             name = f'{self.__model} {self.deviceId}',
-            manufacturer = 'Fermax',
+            manufacturer = DEVICE_MANUFACTURER,
             model = self.__model,
-            sw_version = '0.0.1'
+            sw_version = HASS_BLUECON_VERSION
         )
 
     async def async_update(self):

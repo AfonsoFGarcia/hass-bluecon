@@ -5,7 +5,7 @@ from homeassistant.helpers.entity import DeviceInfo
 
 from bluecon import BlueConAPI
 
-from .const import DOMAIN, SIGNAL_CALL_ENDED
+from .const import DEVICE_MANUFACTURER, DOMAIN, HASS_BLUECON_VERSION, SIGNAL_CALL_ENDED
 
 async def async_setup_entry(hass, config, async_add_entities):
     bluecon : BlueConAPI = hass.data[DOMAIN][config.entry_id]
@@ -58,9 +58,9 @@ class BlueConStillCamera(Camera):
                 (DOMAIN, self.deviceId)
             },
             name = f'{self.__model} {self.deviceId}',
-            manufacturer = 'Fermax',
+            manufacturer = DEVICE_MANUFACTURER,
             model = self.__model,
-            sw_version = '0.0.1'
+            sw_version = HASS_BLUECON_VERSION
         )
     
     def camera_image(self, width: int | None = None, height: int | None = None) -> bytes | None:

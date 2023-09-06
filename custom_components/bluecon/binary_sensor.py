@@ -4,7 +4,7 @@ from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import DeviceInfo
 from bluecon import BlueConAPI
 
-from .const import DOMAIN, SIGNAL_CALL_ENDED, SIGNAL_CALL_STARTED
+from .const import DEVICE_MANUFACTURER, DOMAIN, HASS_BLUECON_VERSION, SIGNAL_CALL_ENDED, SIGNAL_CALL_STARTED
 
 STATE_CONNECTED = "Connected"
 
@@ -88,9 +88,9 @@ class BlueConCallStatusBinarySensor(BinarySensorEntity):
                 (DOMAIN, self.deviceId)
             },
             name = f'{self.__model} {self.deviceId}',
-            manufacturer = 'Fermax',
+            manufacturer = DEVICE_MANUFACTURER,
             model = self.__model,
-            sw_version = '0.0.1'
+            sw_version = HASS_BLUECON_VERSION
         )
 
 class BlueConConnectionStatusBinarySensor(BinarySensorEntity):
@@ -119,9 +119,9 @@ class BlueConConnectionStatusBinarySensor(BinarySensorEntity):
                 (DOMAIN, self.deviceId)
             },
             name = f'{self.__model} {self.deviceId}',
-            manufacturer = 'Fermax',
+            manufacturer = DEVICE_MANUFACTURER,
             model = self.__model,
-            sw_version = '0.0.1'
+            sw_version = HASS_BLUECON_VERSION
         )
 
     async def async_update(self):

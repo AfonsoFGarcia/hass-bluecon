@@ -1,5 +1,5 @@
 import asyncio
-from .const import DOMAIN, CONF_LOCK_STATE_RESET
+from .const import DEVICE_MANUFACTURER, DOMAIN, CONF_LOCK_STATE_RESET, HASS_BLUECON_VERSION
 from homeassistant.components.lock import LockEntity
 from homeassistant.const import (
     STATE_JAMMED,
@@ -96,7 +96,7 @@ class BlueConLock(LockEntity):
                 (DOMAIN, self.deviceId)
             },
             name = f'{self.__model} {self.deviceId}',
-            manufacturer = 'Fermax',
+            manufacturer = DEVICE_MANUFACTURER,
             model = self.__model,
-            sw_version = '0.0.1'
+            sw_version = HASS_BLUECON_VERSION
         )
