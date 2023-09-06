@@ -1,7 +1,7 @@
 import json
 from .const import DOMAIN, SIGNAL_CALL_ENDED, SIGNAL_CALL_STARTED
-from .ConfigEntryOAuthTokenStorage import ConfigFolderOAuthTokenStorage
-from .ConfigEntryNotificationInfoStorage import ConfigFolderNotificationInfoStorage
+from .ConfigFolderOAuthTokenStorage import ConfigFolderOAuthTokenStorage
+from .ConfigFolderNotificationInfoStorage import ConfigFolderNotificationInfoStorage
 from homeassistant.const import EVENT_HOMEASSISTANT_STOP, Platform
 from homeassistant.helpers.dispatcher import dispatcher_send
 from bluecon import BlueConAPI, INotification, CallNotification, CallEndNotification, IOAuthTokenStorage, INotificationInfoStorage, OAuthToken
@@ -44,8 +44,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return unload_ok
 
 async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
-    tempNotificationInfoStorage: INotificationInfoStorage = ConfigEntryNotificationInfoStorage(hass, config_entry)
-    tempOAuthTokenStorage: IOAuthTokenStorage = ConfigEntryOAuthTokenStorage(hass, config_entry)
+    tempNotificationInfoStorage: INotificationInfoStorage = ConfigFolderNotificationInfoStorage(hass, config_entry)
+    tempOAuthTokenStorage: IOAuthTokenStorage = ConfigFolderOAuthTokenStorage(hass, config_entry)
 
     if config_entry.version == 1:
         try:
