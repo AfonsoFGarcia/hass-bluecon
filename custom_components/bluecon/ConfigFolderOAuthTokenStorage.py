@@ -8,7 +8,8 @@ class ConfigFolderOAuthTokenStorage(IOAuthTokenStorage):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
         self.__oAuthTokenFileName = Path(hass.config.path(f'.{DOMAIN}', entry.entry_id, 'oauth_token.json'))
 
-        self.__oAuthTokenFileName.mkdir(parents=True, exist_ok=True)
+        Path(hass.config.path(f'.{DOMAIN}', entry.entry_id)).mkdir(parents=True, exist_ok=True)
+
         self.__oAuthTokenFileName.touch(exist_ok=True)
     
     def retrieveOAuthToken(self) -> OAuthToken:

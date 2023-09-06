@@ -11,9 +11,10 @@ class ConfigFolderNotificationInfoStorage(INotificationInfoStorage):
         self.__credentialsFileName = Path(hass.config.path(f'.{DOMAIN}', entry.entry_id, 'credentials.json'))
         self.__persistentIdsFileName = Path(hass.config.path(f'.{DOMAIN}', entry.entry_id, 'persistent_ids.txt'))
 
-        self.__credentialsFileName.mkdir(parents=True, exist_ok=True)
+        Path(hass.config.path(f'.{DOMAIN}', entry.entry_id)).mkdir(parents=True, exist_ok=True)
+        Path(hass.config.path(f'.{DOMAIN}', entry.entry_id)).mkdir(parents=True, exist_ok=True)
+
         self.__credentialsFileName.touch(exist_ok=True)
-        self.__persistentIdsFileName.mkdir(parents=True, exist_ok=True)
         self.__persistentIdsFileName.touch(exist_ok=True)
     
     def retrieveCredentials(self) -> dict[str, dict[str, Any]] | None:
