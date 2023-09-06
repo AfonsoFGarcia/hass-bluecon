@@ -59,12 +59,11 @@ class BlueConOptionsFlow(OptionsFlow):
         lockTimeout = self.config_entry.options[CONF_LOCK_STATE_RESET] or 5
 
         if user_input is not None:
-            newLockTimeout = user_input[CONF_LOCK_STATE_RESET]
-            if newLockTimeout >= 0:
+            if user_input[CONF_LOCK_STATE_RESET] >= 0:
                 self.hass.config_entries.async_update_entry(self.config_entry, options=user_input)
                 return self.async_create_entry(title=None, data=None)
             else:
-                error_info[CONF_LOCK_STATE_RESET] = 'negative_value'
+                error_info['base'] = 'negative_value'
         
         return self.async_show_form(
             step_id = "init", 
