@@ -2,32 +2,32 @@ from bluecon import INotificationInfoStorage
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from typing import Any
-from .const import SIGNAL_ENTITY_UPDATED
-from homeassistant.helpers.dispatcher import dispatcher_send
+from .const import DOMAIN
+import json
 
-class ConfigEntryNotificationInfoStorage(INotificationInfoStorage):
+class ConfigFolderNotificationInfoStorage(INotificationInfoStorage):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
-        self.__entry = entry
-        self.__hass = hass
+        self.__credentialsFileName = hass.config.path(f'.{DOMAIN}', entry.entry_id, 'credentials.json')
+        self.__persistentIdsFileName = hass.config.path(f'.{DOMAIN}', entry.entry_id, 'persistent_ids.txt')
     
     def retrieveCredentials(self) -> dict[str, dict[str, Any]] | None:
-        return self.__entry.options["credentials"]
+        try:
+            with open(self.__credentialsFileName, "r") as f:
+                return json.load(f)
+        except FileNotFoundError:
+            return None
     
     def storeCredentials(self, credentials: dict[str, dict[str, Any]]):
-        new = {**self.__entry.options,
-                      "credentials": credentials}
-        dispatcher_send(self.__hass, SIGNAL_ENTITY_UPDATED.format(self.__entry.entry_id), new)
+        with open(self.__credentialsFileName, "w") as f:
+            json.dump(credentials, f)
     
     def retrievePersistentIds(self) -> list[str] | None:
-        return self.__entry.options["persistentIds"]
+        try:
+            with open(self.__persistentIdsFileName, "r") as f:
+                return [x.strip() for x in f]
+        except FileNotFoundError:
+            return None
     
     def storePersistentId(self, persistentId: str):
-        stored_persistent_ids = self.__entry.options["persistentIds"]
-        if stored_persistent_ids is None:
-            stored_persistent_ids = []
-        
-        stored_persistent_ids.append(persistentId)
-
-        new = {**self.__entry.options,
-                      "persistentIds": stored_persistent_ids}
-        dispatcher_send(self.__hass, SIGNAL_ENTITY_UPDATED.format(self.__entry.entry_id), new)
+        with open(self.__persistentIdsFileName, "a") as f:
+            f.write(persistentId + "\n")

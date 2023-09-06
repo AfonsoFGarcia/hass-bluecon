@@ -1,16 +1,12 @@
-from .const import DOMAIN, SIGNAL_CALL_ENDED, SIGNAL_CALL_STARTED, SIGNAL_ENTITY_UPDATED
-from .ConfigEntryOAuthTokenStorage import ConfigEntryOAuthTokenStorage
-from .ConfigEntryNotificationInfoStorage import ConfigEntryNotificationInfoStorage
+import json
+from .const import DOMAIN, SIGNAL_CALL_ENDED, SIGNAL_CALL_STARTED
+from .ConfigEntryOAuthTokenStorage import ConfigFolderOAuthTokenStorage
+from .ConfigEntryNotificationInfoStorage import ConfigFolderNotificationInfoStorage
 from homeassistant.const import EVENT_HOMEASSISTANT_STOP, Platform
-from homeassistant.helpers.dispatcher import dispatcher_send, async_dispatcher_connect
-from bluecon import BlueConAPI, INotification, CallNotification, CallEndNotification
+from homeassistant.helpers.dispatcher import dispatcher_send
+from bluecon import BlueConAPI, INotification, CallNotification, CallEndNotification, IOAuthTokenStorage, INotificationInfoStorage, OAuthToken
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.config_entries import ConfigEntry
-import json
-import logging
-
-
-_LOGGER = logging.getLogger(__name__)
 
 
 PLATFORMS: list[str] = [Platform.BINARY_SENSOR, Platform.LOCK, Platform.CAMERA, Platform.SENSOR]
@@ -26,20 +22,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         "bluecon": None
     }
 
-    bluecon = BlueConAPI.create_already_authed(notification_callback, ConfigEntryOAuthTokenStorage(hass, entry), ConfigEntryNotificationInfoStorage(hass, entry))
+    bluecon = BlueConAPI.create_already_authed(notification_callback, ConfigFolderOAuthTokenStorage(hass, entry), ConfigFolderNotificationInfoStorage(hass, entry))
     await hass.async_add_executor_job(bluecon.startNotificationListener)
 
     @callback
     async def cleanup(event):
         await bluecon.stopNotificationListener()
-
-    @callback
-    async def updateConfigEntry(data):
-        _LOGGER.warning(f"Updating config entry {entry.entry_id}")
-        hass.config_entries.async_update_entry(entry, options=data)
     
     hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, cleanup)
-    async_dispatcher_connect(hass, SIGNAL_ENTITY_UPDATED.format(entry.entry_id), updateConfigEntry)
     hass.data[DOMAIN][entry.entry_id] = bluecon
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -54,6 +44,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return unload_ok
 
 async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
+    tempNotificationInfoStorage: INotificationInfoStorage = ConfigEntryNotificationInfoStorage(hass, config_entry)
+    tempOAuthTokenStorage: IOAuthTokenStorage = ConfigEntryOAuthTokenStorage(hass, config_entry)
+
     if config_entry.version == 1:
         try:
             with open("credentials.json", "r") as f:
@@ -67,16 +60,29 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         except FileNotFoundError:
             persistentIds = None
         
-        new = {
-            **config_entry.data,
-            "credentials": credentials,
-            "persistentIds": persistentIds
-        }
-        config_entry.version = 3
-        hass.config_entries.async_update_entry(config_entry, data={}, options=new)
+        tempOAuthTokenStorage.storeOAuthToken(OAuthToken.fromJson(config_entry.data["token"]))
+        tempNotificationInfoStorage.storeCredentials(credentials)
+        for persistentId in persistentIds:
+            tempNotificationInfoStorage.storePersistentId(persistentId)
+
+        config_entry.version = 4
+        hass.config_entries.async_update_entry(config_entry, data={}, options={})
     if config_entry.version == 2:
-        new = {**config_entry.data}
+        
+        tempOAuthTokenStorage.storeOAuthToken(OAuthToken.fromJson(config_entry.data["token"]))
+        tempNotificationInfoStorage.storeCredentials(config_entry.data["credentials"])
+        for persistentId in config_entry.data["persistentIds"]:
+            tempNotificationInfoStorage.storePersistentId(persistentId)
+
         config_entry.version = 3
-        hass.config_entries.async_update_entry(config_entry, data={}, options=new)
+        hass.config_entries.async_update_entry(config_entry, data={}, options={})
+    if config_entry.version == 3:
+        tempOAuthTokenStorage.storeOAuthToken(OAuthToken.fromJson(config_entry.options["token"]))
+        tempNotificationInfoStorage.storeCredentials(config_entry.options["credentials"])
+        for persistentId in config_entry.options["persistentIds"]:
+            tempNotificationInfoStorage.storePersistentId(persistentId)
+
+        config_entry.version = 4
+        hass.config_entries.async_update_entry(config_entry, data = {}, options = {})
     
     return True
