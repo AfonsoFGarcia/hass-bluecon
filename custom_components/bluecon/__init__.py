@@ -2,7 +2,7 @@ from .const import DOMAIN, SIGNAL_CALL_ENDED, SIGNAL_CALL_STARTED, SIGNAL_ENTITY
 from .ConfigEntryOAuthTokenStorage import ConfigEntryOAuthTokenStorage
 from .ConfigEntryNotificationInfoStorage import ConfigEntryNotificationInfoStorage
 from homeassistant.const import EVENT_HOMEASSISTANT_STOP, Platform
-from homeassistant.helpers.dispatcher import dispatcher_send
+from homeassistant.helpers.dispatcher import dispatcher_send, async_dispatcher_connect
 from bluecon import BlueConAPI, INotification, CallNotification, CallEndNotification
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.config_entries import ConfigEntry
@@ -34,12 +34,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         await bluecon.stopNotificationListener()
 
     @callback
-    async def updateConfigEntry(event):
+    async def updateConfigEntry(data):
         _LOGGER.warning(f"Updating config entry {entry.entry_id}")
-        hass.config_entries.async_update_entry(entry, options=event.data)
+        hass.config_entries.async_update_entry(entry, options=data)
     
     hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, cleanup)
-    hass.bus.async_listen(SIGNAL_ENTITY_UPDATED.format(entry.entry_id), updateConfigEntry)
+    async_dispatcher_connect(hass, SIGNAL_ENTITY_UPDATED.format(entry.entry_id), updateConfigEntry)
     hass.data[DOMAIN][entry.entry_id] = bluecon
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)

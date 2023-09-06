@@ -3,6 +3,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from typing import Any
 from .const import SIGNAL_ENTITY_UPDATED
+from homeassistant.helpers.dispatcher import dispatcher_send
 
 class ConfigEntryNotificationInfoStorage(INotificationInfoStorage):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
@@ -15,7 +16,7 @@ class ConfigEntryNotificationInfoStorage(INotificationInfoStorage):
     def storeCredentials(self, credentials: dict[str, dict[str, Any]]):
         new = {**self.__entry.options,
                       "credentials": credentials}
-        self.__hass.bus.fire(SIGNAL_ENTITY_UPDATED.format(self.__entry.entry_id), new)
+        dispatcher_send(self.__hass, SIGNAL_ENTITY_UPDATED.format(self.__entry.entry_id), new)
     
     def retrievePersistentIds(self) -> list[str] | None:
         return self.__entry.options["persistentIds"]
@@ -29,4 +30,4 @@ class ConfigEntryNotificationInfoStorage(INotificationInfoStorage):
 
         new = {**self.__entry.options,
                       "persistentIds": stored_persistent_ids}
-        self.__hass.bus.fire(SIGNAL_ENTITY_UPDATED.format(self.__entry.entry_id), new)
+        dispatcher_send(self.__hass, SIGNAL_ENTITY_UPDATED.format(self.__entry.entry_id), new)
