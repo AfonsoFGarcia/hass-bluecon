@@ -57,7 +57,8 @@ class BlueConOptionsFlow(OptionsFlow):
         error_info: dict[str, str] = {}
 
         if user_input is not None:
-            return self.async_create_entry(title="", data=user_input)
+            self.hass.config_entries.async_update_entry(self.config_entry, options=user_input)
+            return self.async_create_entry(title=None, data=None)
         
         return self.async_show_form(
             step_id = "init", 
