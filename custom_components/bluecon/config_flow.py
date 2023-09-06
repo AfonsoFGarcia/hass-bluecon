@@ -56,14 +56,20 @@ class BlueConOptionsFlow(OptionsFlow):
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         error_info: dict[str, str] = {}
 
+        lockTimeout = self.config_entry.options[CONF_LOCK_STATE_RESET] or 5
+
         if user_input is not None:
-            self.hass.config_entries.async_update_entry(self.config_entry, options=user_input)
-            return self.async_create_entry(title=None, data=None)
+            newLockTimeout = user_input[CONF_LOCK_STATE_RESET]
+            if newLockTimeout >= 0:
+                self.hass.config_entries.async_update_entry(self.config_entry, options=user_input)
+                return self.async_create_entry(title=None, data=None)
+            else:
+                error_info[CONF_LOCK_STATE_RESET] = 'negative_value'
         
         return self.async_show_form(
             step_id = "init", 
             data_schema = vol.Schema({
-                vol.Required(CONF_LOCK_STATE_RESET, default = 5): int
+                vol.Required(CONF_LOCK_STATE_RESET, default = lockTimeout): int
             }),
             errors=error_info
         )

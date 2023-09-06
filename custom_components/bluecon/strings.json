@@ -25,6 +25,9 @@
         },
         "description": "Time to reset the lock back to locked once it is unlocked, in seconds."
       }
+    },
+    "error": {
+      "negative_value": "The value must be a positive number"
     }
   },
   "entity": {
