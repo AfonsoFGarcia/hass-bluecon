@@ -4,11 +4,17 @@ from homeassistant.core import HomeAssistant
 from typing import Any
 from .const import DOMAIN
 import json
+from pathlib import Path
 
 class ConfigFolderNotificationInfoStorage(INotificationInfoStorage):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
-        self.__credentialsFileName = hass.config.path(f'.{DOMAIN}', entry.entry_id, 'credentials.json')
-        self.__persistentIdsFileName = hass.config.path(f'.{DOMAIN}', entry.entry_id, 'persistent_ids.txt')
+        self.__credentialsFileName = Path(hass.config.path(f'.{DOMAIN}', entry.entry_id, 'credentials.json'))
+        self.__persistentIdsFileName = Path(hass.config.path(f'.{DOMAIN}', entry.entry_id, 'persistent_ids.txt'))
+
+        self.__credentialsFileName.mkdir(parents=True, exist_ok=True)
+        self.__credentialsFileName.touch(exist_ok=True)
+        self.__persistentIdsFileName.mkdir(parents=True, exist_ok=True)
+        self.__persistentIdsFileName.touch(exist_ok=True)
     
     def retrieveCredentials(self) -> dict[str, dict[str, Any]] | None:
         try:
@@ -18,7 +24,7 @@ class ConfigFolderNotificationInfoStorage(INotificationInfoStorage):
             return None
     
     def storeCredentials(self, credentials: dict[str, dict[str, Any]]):
-        with open(self.__credentialsFileName, "w+") as f:
+        with open(self.__credentialsFileName, "w") as f:
             json.dump(credentials, f)
     
     def retrievePersistentIds(self) -> list[str] | None:
@@ -29,5 +35,5 @@ class ConfigFolderNotificationInfoStorage(INotificationInfoStorage):
             return None
     
     def storePersistentId(self, persistentId: str):
-        with open(self.__persistentIdsFileName, "a+") as f:
+        with open(self.__persistentIdsFileName, "a") as f:
             f.write(persistentId + "\n")
