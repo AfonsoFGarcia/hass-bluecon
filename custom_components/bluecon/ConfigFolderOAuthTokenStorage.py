@@ -14,7 +14,7 @@ class ConfigFolderOAuthTokenStorage(IOAuthTokenStorage):
     
     def retrieveOAuthToken(self) -> OAuthToken:
         with open(self.__oAuthTokenFileName, "r") as f:
-            return OAuthToken.fromJson(f)
+            return OAuthToken.fromJson(f.read())
     
     def storeOAuthToken(self, oAuthToken: OAuthToken):
         with open(self.__oAuthTokenFileName, "w") as f:
