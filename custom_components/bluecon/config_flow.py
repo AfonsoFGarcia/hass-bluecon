@@ -5,7 +5,7 @@ from homeassistant.const import (
     CONF_USERNAME,
     CONF_PASSWORD
 )
-from homeassistant.core import callback
+from homeassistant.core import callback, async_get_hass
 import voluptuous as vol
 from .ConfigFolderOAuthTokenStorage import ConfigFolderOAuthTokenStorage
 from .ConfigFolderNotificationInfoStorage import ConfigFolderNotificationInfoStorage
@@ -21,6 +21,7 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
 
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         error_info: dict[str, str] = {}
+        hass = await async_get_hass()
 
         if user_input is not None:
             try:
