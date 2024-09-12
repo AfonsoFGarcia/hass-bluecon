@@ -60,7 +60,7 @@ class BlueConOptionsFlow(OptionsFlow):
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         error_info: dict[str, str] = {}
 
-        lockTimeout = self.config_entry.options[CONF_LOCK_STATE_RESET] or 5
+        lockTimeout = self.config_entry.options.get(CONF_LOCK_STATE_RESET, None) or 5
 
         if user_input is not None:
             if user_input[CONF_LOCK_STATE_RESET] >= 0:
