@@ -1,40 +1,26 @@
 from bluecon import INotificationInfoStorage
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.storage import Store
 from typing import Any
 from .const import DOMAIN
-import json
-from pathlib import Path
+
 
 class ConfigFolderNotificationInfoStorage(INotificationInfoStorage):
-    def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
-        self.__credentialsFileName = Path(hass.config.path(f'.{DOMAIN}', entry.entry_id, 'credentials.json'))
-        self.__persistentIdsFileName = Path(hass.config.path(f'.{DOMAIN}', entry.entry_id, 'persistent_ids.txt'))
-
-        Path(hass.config.path(f'.{DOMAIN}', entry.entry_id)).mkdir(parents=True, exist_ok=True)
-        Path(hass.config.path(f'.{DOMAIN}', entry.entry_id)).mkdir(parents=True, exist_ok=True)
-
-        self.__credentialsFileName.touch(exist_ok=True)
-        self.__persistentIdsFileName.touch(exist_ok=True)
+    def __init__(self, hass: HomeAssistant):
+        self.__credentialsStore = Store(hass=hass, version=1, key=f"{DOMAIN}.CREDENTIALS")
+        self.__persistentIdsStore = Store(hass=hass, version=1, key=f"{DOMAIN}.PERSISTENT_IDS")
     
-    def retrieveCredentials(self) -> dict[str, dict[str, Any]] | None:
-        try:
-            with open(self.__credentialsFileName, "r") as f:
-                return json.load(f)
-        except FileNotFoundError:
-            return None
+    async def retrieveCredentials(self) -> dict[str, dict[str, Any]] | None:
+        return await self.__credentialsStore.async_load()
     
-    def storeCredentials(self, credentials: dict[str, dict[str, Any]]):
-        with open(self.__credentialsFileName, "w") as f:
-            json.dump(credentials, f)
+    async def storeCredentials(self, credentials: dict[str, dict[str, Any]]):
+        await self.__credentialsStore.async_save(credentials)
     
-    def retrievePersistentIds(self) -> list[str] | None:
-        try:
-            with open(self.__persistentIdsFileName, "r") as f:
-                return [x.strip() for x in f]
-        except FileNotFoundError:
-            return None
+    async def retrievePersistentIds(self) -> list[str] | None:
+        return await self.__persistentIdsStore.async_load()
     
-    def storePersistentId(self, persistentId: str):
-        with open(self.__persistentIdsFileName, "a") as f:
-            f.write(persistentId + "\n")
+    async def storePersistentId(self, persistentId: str):
+        persistentIds = await self.retrievePersistentIds() or []
+        persistentId.append(persistentId)
+        await self.__persistentIdsStore.async_save(persistentIds)

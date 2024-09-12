@@ -7,8 +7,10 @@ from homeassistant.const import (
 )
 from homeassistant.core import callback
 import voluptuous as vol
+from .ConfigFolderOAuthTokenStorage import ConfigFolderOAuthTokenStorage
+from .ConfigFolderNotificationInfoStorage import ConfigFolderNotificationInfoStorage
 
-from bluecon import BlueConAPI, InMemoryOAuthTokenStorage, IOAuthTokenStorage
+from bluecon import BlueConAPI, IOAuthTokenStorage, INotificationInfoStorage
 
 from custom_components.bluecon.const import CONF_LOCK_STATE_RESET
 
@@ -22,8 +24,9 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
 
         if user_input is not None:
             try:
-                tokenStorage: IOAuthTokenStorage = InMemoryOAuthTokenStorage()
-                await BlueConAPI.create(user_input[CONF_USERNAME], user_input[CONF_PASSWORD], lambda x: None, tokenStorage)
+                tokenStorage: IOAuthTokenStorage = ConfigFolderOAuthTokenStorage(hass)
+                notificationInfoStorage: INotificationInfoStorage = ConfigFolderNotificationInfoStorage(hass)
+                await BlueConAPI.create(user_input[CONF_USERNAME], user_input[CONF_PASSWORD], lambda x: None, tokenStorage, notificationInfoStorage)
 
                 await self.async_set_unique_id(user_input[CONF_USERNAME])
                 self._abort_if_unique_id_configured()
