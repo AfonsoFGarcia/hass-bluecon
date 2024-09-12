@@ -15,7 +15,7 @@ from bluecon import BlueConAPI
 
 async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry, async_add_entities):
     bluecon = hass.data[DOMAIN][config.entry_id]
-    lockTimeout = config.options[CONF_LOCK_STATE_RESET]
+    lockTimeout = config.options.get(CONF_LOCK_STATE_RESET, 5)
 
     pairings = await bluecon.getPairings()
 
