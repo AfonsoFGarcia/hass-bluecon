@@ -2,31 +2,35 @@ from homeassistant.components.camera import Camera
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.const import CONF_API_KEY
+from homeassistant.config_entries import ConfigEntry
+
 
 from bluecon import BlueConAPI
 
-from .const import DEVICE_MANUFACTURER, DOMAIN, HASS_BLUECON_VERSION, SIGNAL_CALL_ENDED
+from .const import DEVICE_MANUFACTURER, DOMAIN, HASS_BLUECON_VERSION, SIGNAL_CALL_ENDED, CONF_PACKAGE_NAME, CONF_APP_ID, CONF_PROJECT_ID, CONF_SENDER_ID
 
-async def async_setup_entry(hass, config, async_add_entities):
-    bluecon : BlueConAPI = hass.data[DOMAIN][config.entry_id]
+async def async_setup_entry(hass, entry: ConfigEntry, async_add_entities):
+    if entry.data.get(CONF_SENDER_ID, None) is not None and entry.data.get(CONF_API_KEY, None) is not None and entry.data.get(CONF_PROJECT_ID, None) is not None and entry.data.get(CONF_APP_ID, None) is not None and entry.data.get(CONF_PACKAGE_NAME, None) is not None:
+        bluecon : BlueConAPI = hass.data[DOMAIN][entry.entry_id]
 
-    pairings = await bluecon.getPairings()
+        pairings = await bluecon.getPairings()
 
-    cameras = []
+        cameras = []
 
-    for pairing in pairings:
-        deviceInfo = await bluecon.getDeviceInfo(pairing.deviceId)
-        if deviceInfo.photoCaller:
-            image = await bluecon.getLastPicture(pairing.deviceId)
-            cameras.append(
-                BlueConStillCamera(
-                    bluecon,
-                    pairing.deviceId,
-                    image,
-                    deviceInfo
+        for pairing in pairings:
+            deviceInfo = await bluecon.getDeviceInfo(pairing.deviceId)
+            if deviceInfo.photoCaller:
+                image = await bluecon.getLastPicture(pairing.deviceId)
+                cameras.append(
+                    BlueConStillCamera(
+                        bluecon,
+                        pairing.deviceId,
+                        image,
+                        deviceInfo
+                    )
                 )
-            )
-    
+        
     async_add_entities(cameras)
 
 class BlueConStillCamera(Camera):

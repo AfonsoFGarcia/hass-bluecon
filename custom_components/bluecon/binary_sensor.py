@@ -4,13 +4,14 @@ from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import DeviceInfo
 from bluecon import BlueConAPI
 from homeassistant.const import CONF_API_KEY
+from homeassistant.config_entries import ConfigEntry
 
 from .const import DEVICE_MANUFACTURER, DOMAIN, HASS_BLUECON_VERSION, SIGNAL_CALL_ENDED, SIGNAL_CALL_STARTED, CONF_PACKAGE_NAME, CONF_APP_ID, CONF_PROJECT_ID, CONF_SENDER_ID
 
 STATE_CONNECTED = "Connected"
 
-async def async_setup_entry(hass, config, async_add_entities):
-    bluecon: BlueConAPI = hass.data[DOMAIN][config.entry_id]
+async def async_setup_entry(hass, entry: ConfigEntry, async_add_entities):
+    bluecon: BlueConAPI = hass.data[DOMAIN][entry.entry_id]
 
     pairings = await bluecon.getPairings()
 
@@ -27,7 +28,7 @@ async def async_setup_entry(hass, config, async_add_entities):
             )
         )
 
-        if config.get(CONF_SENDER_ID, None) is not None and config.get(CONF_API_KEY, None) is not None and config.get(CONF_PROJECT_ID, None) is not None and config.get(CONF_APP_ID, None) is not None and config.get(CONF_PACKAGE_NAME, None) is not None:
+        if entry.data.get(CONF_SENDER_ID, None) is not None and entry.data.get(CONF_API_KEY, None) is not None and entry.data.get(CONF_PROJECT_ID, None) is not None and entry.data.get(CONF_APP_ID, None) is not None and entry.data.get(CONF_PACKAGE_NAME, None) is not None:
             for accessDoorName, accessDoor in pairing.accessDoorMap.items():
                 sensors.append(
                     BlueConCallStatusBinarySensor(
