@@ -86,10 +86,11 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
     
     async def async_step_reconfigure(self, user_input: dict[str, Any] | None = None):
         error_info: dict[str, str] = {}
-        entry = self.hass.config_entries.async_entry_for_domain_unique_id(DOMAIN, user_input[CONF_USERNAME])
 
         if user_input is not None:
             try:
+                entry = self.hass.config_entries.async_entry_for_domain_unique_id(DOMAIN, user_input[CONF_USERNAME])
+                
                 tokenStorage: IOAuthTokenStorage = ConfigFolderOAuthTokenStorage(self.hass)
                 notificationInfoStorage: INotificationInfoStorage = ConfigFolderNotificationInfoStorage(self.hass)
                 await BlueConAPI.create(
