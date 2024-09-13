@@ -71,8 +71,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return unload_ok
 
 async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
-    tempNotificationInfoStorage: INotificationInfoStorage = ConfigFolderNotificationInfoStorage(hass, config_entry)
-    tempOAuthTokenStorage: IOAuthTokenStorage = ConfigFolderOAuthTokenStorage(hass, config_entry)
+    tempNotificationInfoStorage: INotificationInfoStorage = ConfigFolderNotificationInfoStorage(hass)
+    tempOAuthTokenStorage: IOAuthTokenStorage = ConfigFolderOAuthTokenStorage(hass)
 
     if config_entry.version == 1:
         try:
