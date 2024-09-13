@@ -14,6 +14,20 @@
           "projectId": " FCM Project ID",
           "packageName": "FCM Package Name"
         }
+      },
+      "reconfigure": {
+        "title": "Sign-in with Fermax Blue account",
+        "data": {
+          "username": "[%key:common::config_flow::data::username%]",
+          "password": "[%key:common::config_flow::data::password%]",
+          "client_id": "Fermax API Client ID",
+          "client_secret": "Fermax API Client Secret",
+          "api_key": "Google API Key",
+          "senderId": "FCM Sender ID",
+          "appId": "FCM App ID",
+          "projectId": " FCM Project ID",
+          "packageName": "FCM Package Name"
+        }
       }
     },
     "error": {
