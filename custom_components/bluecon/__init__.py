@@ -47,11 +47,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if entry.data.get(CONF_SENDER_ID, None) is not None and entry.data.get(CONF_API_KEY, None) is not None and entry.data.get(CONF_PROJECT_ID, None) is not None and entry.data.get(CONF_APP_ID, None) is not None and entry.data.get(CONF_PACKAGE_NAME, None) is not None:
         await hass.async_add_executor_job(bluecon.startNotificationListener)
 
-    @callback
-    async def cleanup(event):
-        await bluecon.stopNotificationListener()
-    
-    hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, cleanup)
+        @callback
+        async def cleanup(event):
+            await bluecon.stopNotificationListener()
+        
+        hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, cleanup)
+
     hass.data[DOMAIN][entry.entry_id] = bluecon
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)

@@ -3,8 +3,9 @@ from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import DeviceInfo
 from bluecon import BlueConAPI
+from homeassistant.const import CONF_API_KEY
 
-from .const import DEVICE_MANUFACTURER, DOMAIN, HASS_BLUECON_VERSION, SIGNAL_CALL_ENDED, SIGNAL_CALL_STARTED
+from .const import DEVICE_MANUFACTURER, DOMAIN, HASS_BLUECON_VERSION, SIGNAL_CALL_ENDED, SIGNAL_CALL_STARTED, CONF_PACKAGE_NAME, CONF_APP_ID, CONF_PROJECT_ID, CONF_SENDER_ID
 
 STATE_CONNECTED = "Connected"
 
@@ -26,17 +27,18 @@ async def async_setup_entry(hass, config, async_add_entities):
             )
         )
 
-        for accessDoorName, accessDoor in pairing.accessDoorMap.items():
-            sensors.append(
-                BlueConCallStatusBinarySensor(
-                    pairing.deviceId,
-                    accessDoorName,
-                    accessDoor.block,
-                    accessDoor.subBlock,
-                    accessDoor.number,
-                    deviceInfo
+        if config.get(CONF_SENDER_ID, None) is not None and config.get(CONF_API_KEY, None) is not None and config.get(CONF_PROJECT_ID, None) is not None and config.get(CONF_APP_ID, None) is not None and config.get(CONF_PACKAGE_NAME, None) is not None:
+            for accessDoorName, accessDoor in pairing.accessDoorMap.items():
+                sensors.append(
+                    BlueConCallStatusBinarySensor(
+                        pairing.deviceId,
+                        accessDoorName,
+                        accessDoor.block,
+                        accessDoor.subBlock,
+                        accessDoor.number,
+                        deviceInfo
+                    )
                 )
-            )
     
     async_add_entities(sensors)
 
