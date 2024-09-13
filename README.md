@@ -3,7 +3,7 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration)
 
 <a href="#" style="text-align: center;">
- <img src="https://github.com/cvc90/HASS-BlueCon/assets/76731844/dc460880-db59-461e-97d4-03d528586543" width="15%" height="15%" alt="Fermax Blue" text-align="center" margin="0 0 0 0">
+ <img src="https://github.com/user-attachments/assets/522190c4-3b73-49cd-98ba-a6153c7800b4" width="15%" height="15%" alt="Fermax Blue" text-align="center" margin="0 0 0 0">
 </a>
 
 <br> This project is in a lower than alpha state. Unfortunately I do not have the time to progress on it as much as I would like. 
