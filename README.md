@@ -55,4 +55,4 @@ If you are willing to contribute to it, please feel free to open PRs and I'll tr
 - [cvc90](https://github.com/cvc90) - Spanish translations and other improvements
 
 ## 📑 License
-  MIT License | [Read more here](LICENSE.md) | Source of the [animated GIF (Loading Animation)](https://commons.wikimedia.org/wiki/File:Loading_Animation.gif) | Source of the [selfhosted Fonts](https://github.com/adobe-fonts/source-sans)
+  MIT License | [Read more here](LICENSE) | Source of the [animated GIF (Loading Animation)](https://commons.wikimedia.org/wiki/File:Loading_Animation.gif) | Source of the [selfhosted Fonts](https://github.com/adobe-fonts/source-sans)
