@@ -90,7 +90,7 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
         if user_input is not None:
             try:
                 entry = self.hass.config_entries.async_entry_for_domain_unique_id(DOMAIN, user_input[CONF_USERNAME])
-                
+
                 tokenStorage: IOAuthTokenStorage = ConfigFolderOAuthTokenStorage(self.hass)
                 notificationInfoStorage: INotificationInfoStorage = ConfigFolderNotificationInfoStorage(self.hass)
                 await BlueConAPI.create(
@@ -128,7 +128,7 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
                 error_info['base'] = 'invalid_auth'
         
         return self.async_show_form(
-            step_id = "user",
+            step_id = "reconfigure",
             data_schema = vol.Schema({
                 vol.Required(CONF_USERNAME): str,
                 vol.Required(CONF_PASSWORD): str,
