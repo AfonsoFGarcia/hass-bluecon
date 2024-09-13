@@ -34,11 +34,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     bluecon = await BlueConAPI.create_already_authed(
         entry.data[CONF_CLIENT_ID],
         entry.data[CONF_CLIENT_SECRET],
-        entry.data[CONF_SENDER_ID],
-        entry.data[CONF_API_KEY],
-        entry.data[CONF_PROJECT_ID],
-        entry.data[CONF_APP_ID],
-        entry.data[CONF_PACKAGE_NAME],
+        entry.data.get(CONF_SENDER_ID, None),
+        entry.data.get(CONF_API_KEY, None),
+        entry.data.get(CONF_PROJECT_ID, None),
+        entry.data.get(CONF_APP_ID, None),
+        entry.data.get(CONF_PACKAGE_NAME, None),
         notification_callback, 
         ConfigFolderOAuthTokenStorage(hass), 
         ConfigFolderNotificationInfoStorage(hass)
