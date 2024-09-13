@@ -86,12 +86,12 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
     
     async def async_step_reconfigure(self, user_input: dict[str, Any] | None = None):
         error_info: dict[str, str] = {}
-        hass = async_get_hass()
+        entry = self.hass.config_entries.async_entry_for_domain_unique_id(DOMAIN, user_input[CONF_USERNAME])
 
         if user_input is not None:
             try:
-                tokenStorage: IOAuthTokenStorage = ConfigFolderOAuthTokenStorage(hass)
-                notificationInfoStorage: INotificationInfoStorage = ConfigFolderNotificationInfoStorage(hass)
+                tokenStorage: IOAuthTokenStorage = ConfigFolderOAuthTokenStorage(self.hass)
+                notificationInfoStorage: INotificationInfoStorage = ConfigFolderNotificationInfoStorage(self.hass)
                 await BlueConAPI.create(
                     user_input[CONF_USERNAME], 
                     user_input[CONF_PASSWORD], 
@@ -107,10 +107,8 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
                     notificationInfoStorage
                 )
 
-                await self.async_set_unique_id(user_input[CONF_USERNAME])
-                
-                return self.async_create_entry(
-                    title = user_input[CONF_USERNAME], 
+                self.hass.config_entries.async_update_entry(
+                    entry = entry, 
                     data = {
                         CONF_CLIENT_ID: user_input[CONF_CLIENT_ID],
                         CONF_CLIENT_SECRET: user_input[CONF_CLIENT_SECRET],
@@ -119,11 +117,10 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
                         CONF_PROJECT_ID: user_input.get(CONF_PROJECT_ID, None),
                         CONF_APP_ID: user_input.get(CONF_APP_ID, None),
                         CONF_PACKAGE_NAME: user_input.get(CONF_PACKAGE_NAME, None)
-                    }, 
-                    options = {
-                        CONF_LOCK_STATE_RESET: 5
-                    }
-                )
+                    })
+                
+                await self.hass.config_entries.async_reload(entry.entry_id)
+                return self.async_abort(reason="reconfigure_successful")
             except AbortFlow as e:
                 raise e
             except Exception:

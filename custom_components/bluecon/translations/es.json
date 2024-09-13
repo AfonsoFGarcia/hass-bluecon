@@ -20,7 +20,8 @@
       "invalid_auth": "Autenticación no válida"
     },
     "abort": {
-      "already_configured": "La cuenta ya está configurada"
+      "already_configured": "La cuenta ya está configurada",
+      "reconfigure_successful": "Integración reconfigurada"
     }
   },
   "options": {

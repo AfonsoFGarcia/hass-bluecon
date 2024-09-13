@@ -20,7 +20,8 @@
       "invalid_auth": "Autenticação inválida"
     },
     "abort": {
-      "already_configured": "A conta já está registada"
+      "already_configured": "A conta já está registada",
+      "reconfigure_successful": "Integração reconfigurada"
     }
   },
   "options": {
