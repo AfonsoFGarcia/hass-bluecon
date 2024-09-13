@@ -1,0 +1,54 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Entrar com a sua conta Fermax Blue",
+        "data": {
+          "username": "Nome de utilizador",
+          "password": "Password",
+          "client_id": "Fermax API Client ID",
+          "client_secret": "Fermax API Client Secret",
+          "api_key": "Google API Key",
+          "senderId": "FCM Sender ID",
+          "appId": "FCM App ID",
+          "projectId": " FCM Project ID",
+          "packageName": "FCM Package Name"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Autenticação inválida"
+    },
+    "abort": {
+      "already_configured": "A conta já está registada"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Definições da integração",
+        "data": {
+          "lockStateReset": "Temporizador de reset do estado da fechadura"
+        },
+        "description": "Tempo para colocar o estado da fechadura como fechado depois de abrir, em segundos."
+      }
+    },
+    "error": {
+      "negative_value": "O número tem de ser positivo"
+    }
+  },
+  "entity": {
+      "sensor": {
+          "wifi-state": {
+              "state": {
+                  "terrible": "Terrível",
+                  "bad": "Mau",
+                  "weak": "Fraco",
+                  "good": "Bom",
+                  "excelent": "Excelente",
+                  "unknown": "Desconhecido"
+              }
+          }
+      }
+  }
+}
