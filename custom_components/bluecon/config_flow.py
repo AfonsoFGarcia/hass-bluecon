@@ -35,11 +35,11 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
                     user_input[CONF_PASSWORD], 
                     user_input[CONF_CLIENT_ID],
                     user_input[CONF_CLIENT_SECRET],
-                    user_input[CONF_SENDER_ID],
-                    user_input[CONF_API_KEY],
-                    user_input[CONF_PROJECT_ID],
-                    user_input[CONF_APP_ID],
-                    user_input[CONF_PACKAGE_NAME],
+                    user_input.get(CONF_SENDER_ID, None),
+                    user_input.get(CONF_API_KEY, None),
+                    user_input.get(CONF_PROJECT_ID, None),
+                    user_input.get(CONF_APP_ID, None),
+                    user_input.get(CONF_PACKAGE_NAME, None),
                     lambda x: None, 
                     tokenStorage, 
                     notificationInfoStorage
@@ -53,11 +53,11 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
                     data = {
                         CONF_CLIENT_ID: user_input[CONF_CLIENT_ID],
                         CONF_CLIENT_SECRET: user_input[CONF_CLIENT_SECRET],
-                        CONF_SENDER_ID: user_input[CONF_SENDER_ID],
-                        CONF_API_KEY: user_input[CONF_API_KEY],
-                        CONF_PROJECT_ID: user_input[CONF_PROJECT_ID],
-                        CONF_APP_ID: user_input[CONF_APP_ID],
-                        CONF_PACKAGE_NAME: user_input[CONF_PACKAGE_NAME]
+                        CONF_SENDER_ID: user_input.get(CONF_SENDER_ID, None),
+                        CONF_API_KEY: user_input.get(CONF_API_KEY, None),
+                        CONF_PROJECT_ID: user_input.get(CONF_PROJECT_ID, None),
+                        CONF_APP_ID: user_input.get(CONF_APP_ID, None),
+                        CONF_PACKAGE_NAME: user_input.get(CONF_PACKAGE_NAME, None)
                     }, 
                     options = {
                         CONF_LOCK_STATE_RESET: 5
@@ -97,11 +97,11 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
                     user_input[CONF_PASSWORD], 
                     user_input[CONF_CLIENT_ID],
                     user_input[CONF_CLIENT_SECRET],
-                    user_input[CONF_SENDER_ID],
-                    user_input[CONF_API_KEY],
-                    user_input[CONF_PROJECT_ID],
-                    user_input[CONF_APP_ID],
-                    user_input[CONF_PACKAGE_NAME],
+                    user_input.get(CONF_SENDER_ID, None),
+                    user_input.get(CONF_API_KEY, None),
+                    user_input.get(CONF_PROJECT_ID, None),
+                    user_input.get(CONF_APP_ID, None),
+                    user_input.get(CONF_PACKAGE_NAME, None),
                     lambda x: None, 
                     tokenStorage, 
                     notificationInfoStorage
@@ -114,11 +114,11 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
                     data = {
                         CONF_CLIENT_ID: user_input[CONF_CLIENT_ID],
                         CONF_CLIENT_SECRET: user_input[CONF_CLIENT_SECRET],
-                        CONF_SENDER_ID: user_input[CONF_SENDER_ID],
-                        CONF_API_KEY: user_input[CONF_API_KEY],
-                        CONF_PROJECT_ID: user_input[CONF_PROJECT_ID],
-                        CONF_APP_ID: user_input[CONF_APP_ID],
-                        CONF_PACKAGE_NAME: user_input[CONF_PACKAGE_NAME]
+                        CONF_SENDER_ID: user_input.get(CONF_SENDER_ID, None),
+                        CONF_API_KEY: user_input.get(CONF_API_KEY, None),
+                        CONF_PROJECT_ID: user_input.get(CONF_PROJECT_ID, None),
+                        CONF_APP_ID: user_input.get(CONF_APP_ID, None),
+                        CONF_PACKAGE_NAME: user_input.get(CONF_PACKAGE_NAME, None)
                     }, 
                     options = {
                         CONF_LOCK_STATE_RESET: 5
