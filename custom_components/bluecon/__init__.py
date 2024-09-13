@@ -3,11 +3,19 @@ from .const import CONF_LOCK_STATE_RESET, DOMAIN, SIGNAL_CALL_ENDED, SIGNAL_CALL
 from .ConfigFolderOAuthTokenStorage import ConfigFolderOAuthTokenStorage
 from .ConfigFolderNotificationInfoStorage import ConfigFolderNotificationInfoStorage
 from .config_flow import BlueConConfigFlow
-from homeassistant.const import EVENT_HOMEASSISTANT_STOP, Platform
+from homeassistant.const import (
+    CONF_API_KEY,
+    CONF_CLIENT_ID,
+    CONF_CLIENT_SECRET,
+    EVENT_HOMEASSISTANT_STOP,
+    Platform
+)
 from homeassistant.helpers.dispatcher import dispatcher_send
 from bluecon import BlueConAPI, INotification, CallNotification, CallEndNotification, IOAuthTokenStorage, INotificationInfoStorage, OAuthToken
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.config_entries import ConfigEntry
+from custom_components.bluecon.const import CONF_PACKAGE_NAME, CONF_APP_ID, CONF_PROJECT_ID, CONF_SENDER_ID
+
 
 
 PLATFORMS: list[str] = [Platform.BINARY_SENSOR, Platform.LOCK, Platform.CAMERA, Platform.SENSOR]
@@ -23,8 +31,21 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         "bluecon": None
     }
 
-    bluecon = await BlueConAPI.create_already_authed(notification_callback, ConfigFolderOAuthTokenStorage(hass), ConfigFolderNotificationInfoStorage(hass))
-    await hass.async_add_executor_job(bluecon.startNotificationListener)
+    bluecon = await BlueConAPI.create_already_authed(
+        entry.data[CONF_CLIENT_ID],
+        entry.data[CONF_CLIENT_SECRET],
+        entry.data[CONF_SENDER_ID],
+        entry.data[CONF_API_KEY],
+        entry.data[CONF_PROJECT_ID],
+        entry.data[CONF_APP_ID],
+        entry.data[CONF_PACKAGE_NAME],
+        notification_callback, 
+        ConfigFolderOAuthTokenStorage(hass), 
+        ConfigFolderNotificationInfoStorage(hass)
+    )
+
+    if entry.data.get(CONF_SENDER_ID, None) is not None and entry.data.get(CONF_API_KEY, None) is not None and entry.data.get(CONF_PROJECT_ID, None) is not None and entry.data.get(CONF_APP_ID, None) is not None and entry.data.get(CONF_PACKAGE_NAME, None) is not None:
+        await hass.async_add_executor_job(bluecon.startNotificationListener)
 
     @callback
     async def cleanup(event):
@@ -84,8 +105,11 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         for persistentId in config_entry.options["persistentIds"]:
             tempNotificationInfoStorage.storePersistentId(persistentId)
 
-    if config_entry.version < BlueConConfigFlow.VERSION:
+    if config_entry.version < 6:
         config_entry.version = BlueConConfigFlow.VERSION
-        hass.config_entries.async_update_entry(config_entry, data = {}, options = { CONF_LOCK_STATE_RESET: 5 })
+        hass.config_entries.async_update_entry(config_entry, data = {
+                        CONF_CLIENT_ID: "",
+                        CONF_CLIENT_SECRET: ""
+                    }, options = { CONF_LOCK_STATE_RESET: 5 })
     
     return True
