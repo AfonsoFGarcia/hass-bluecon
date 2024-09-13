@@ -1,3 +1,8 @@
+> [!WARNING]
+> At the request of Fermax, significant changes to the underlying library used by HASS-BlueCon have caused the integration to be currently broken.
+> Please follow for more updates on this discussion -> https://github.com/AfonsoFGarcia/hass-bluecon/discussions/6
+
+
 # HASS-BlueCon
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration)
