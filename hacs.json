@@ -1,5 +1,6 @@
 {
   "name": "HASS-BlueCon",
   "render_readme": true,
-  "hide_default_branch": false
+  "hide_default_branch": false,
+  "homeassistant": "2024.3.0"
 }
