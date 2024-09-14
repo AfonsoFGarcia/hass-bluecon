@@ -1,0 +1,69 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Zaloguj się za pomocą konta Fermax Blue",
+        "data": {
+          "username": "Nazwa użytkownika",
+          "password": "Hasło",
+          "client_id": "Identyfikator klienta Fermax API",
+          "client_secret": "Tajny klucz klienta API firmy Fermax",
+          "api_key": "Klucz interfejsu API Google",
+          "senderId": "FCM Sender ID (Identyfikator nadawcy FCM)",
+          "appId": "FCM App ID (Identyfikator aplikacji FCM)",
+          "projectId": "Identyfikator projektu FCM",
+          "packageName": "Nazwa pakietu FCM"
+        }
+      },
+      "reconfigure": {
+        "title": "Sign-in with Fermax Blue account",
+        "data": {
+          "username": "Nazwa użytkownika",
+          "password": "Hasło",
+          "client_id": "Identyfikator klienta Fermax API",
+          "client_secret": "Tajny klucz klienta API firmy Fermax",
+          "api_key": "Klucz interfejsu API Google",
+          "senderId": "FCM Sender ID(Identyfikator nadawcy FCM)",
+          "appId": "FCM App ID (Identyfikator aplikacji FCM)",
+          "projectId": "Identyfikator projektu FCM",
+          "packageName": "Nazwa pakietu FCM"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Nieprawidłowe uwierzytelnianie"
+    },
+    "abort": {
+      "already_configured": "Konto jest już skonfigurowane",
+      "reconfigure_successful": "Przekonfigurowana integracja"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Ustawienia integracji",
+        "data": {
+          "lockStateReset": "Zegar resetowania stanu blokady"
+        },
+        "description": "Czas do ponownego zablokowania zamka po odblokowaniu, w sekundach."
+      }
+    },
+    "error": {
+      "negative_value": "Wartość musi być liczbą dodatnią"
+    }
+  },
+  "entity": {
+      "sensor": {
+          "wifi-state": {
+              "state": {
+                  "terrible": "Straszna",
+                  "bad": "Zła",
+                  "weak": "Słaba",
+                  "good": "Dobra",
+                  "excelent": "Doskonała",
+                  "unknown": "Nieznana"
+              }
+          }
+      }
+  }
+}
