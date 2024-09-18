@@ -7,7 +7,7 @@
           "username": "Nazwa użytkownika",
           "password": "Hasło",
           "client_id": "Identyfikator klienta Fermax API",
-          "client_secret": "Tajny klucz klienta API firmy Fermax",
+          "client_secret": "Tajny klucz klienta Fermax API",
           "api_key": "Klucz interfejsu API Google",
           "senderId": "FCM Sender ID (Identyfikator nadawcy FCM)",
           "appId": "FCM App ID (Identyfikator aplikacji FCM)",
@@ -16,14 +16,14 @@
         }
       },
       "reconfigure": {
-        "title": "Sign-in with Fermax Blue account",
+        "title": "Zaloguj się za pomocą konta Fermax Blue",
         "data": {
           "username": "Nazwa użytkownika",
           "password": "Hasło",
           "client_id": "Identyfikator klienta Fermax API",
-          "client_secret": "Tajny klucz klienta API firmy Fermax",
+          "client_secret": "Tajny klucz klienta Fermax API",
           "api_key": "Klucz interfejsu API Google",
-          "senderId": "FCM Sender ID(Identyfikator nadawcy FCM)",
+          "senderId": "FCM Sender ID (Identyfikator nadawcy FCM)",
           "appId": "FCM App ID (Identyfikator aplikacji FCM)",
           "projectId": "Identyfikator projektu FCM",
           "packageName": "Nazwa pakietu FCM"
