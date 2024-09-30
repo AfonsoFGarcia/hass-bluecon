@@ -77,7 +77,7 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
                 vol.Required(CONF_CLIENT_SECRET): str,
                 vol.Optional(CONF_API_KEY): str,
                 vol.Optional(CONF_SENDER_ID): int,
-                vol.Optional(CONF_APP_ID): int,
+                vol.Optional(CONF_APP_ID): str,
                 vol.Optional(CONF_PROJECT_ID): str,
                 vol.Optional(CONF_PACKAGE_NAME): str
             }),
@@ -136,7 +136,7 @@ class BlueConConfigFlow(ConfigFlow, domain = DOMAIN):
                 vol.Required(CONF_CLIENT_SECRET): str,
                 vol.Optional(CONF_API_KEY): str,
                 vol.Optional(CONF_SENDER_ID): int,
-                vol.Optional(CONF_APP_ID): int,
+                vol.Optional(CONF_APP_ID): str,
                 vol.Optional(CONF_PROJECT_ID): str,
                 vol.Optional(CONF_PACKAGE_NAME): str
             }),
