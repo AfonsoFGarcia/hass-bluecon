@@ -11,11 +11,19 @@ class ConfigFolderOAuthTokenStorage(IOAuthTokenStorage):
         self.__oAuthTokenStore = Store(hass=hass, version=1, key=f"{DOMAIN}.OAUTH_TOKEN")
     
     async def retrieveOAuthToken(self) -> OAuthToken:
-        return OAuthToken.fromJson(asyncio.run_coroutine_threadsafe(
-            self.__oAuthTokenStore.async_load(), self.__hass.loop
-        ).result())
+        if asyncio.get_running_loop() == self.__hass.loop:
+            json = await self.__oAuthTokenStore.async_load()
+        else:
+            json = asyncio.run_coroutine_threadsafe(
+                self.__oAuthTokenStore.async_load(), self.__hass.loop
+            ).result(timeout=2)
+        return OAuthToken.fromJson(json)
     
     async def storeOAuthToken(self, oAuthToken: OAuthToken):
-        asyncio.run_coroutine_threadsafe(
-            self.__oAuthTokenStore.async_save(oAuthToken.toJson()), self.__hass.loop
-        ).result()
+        json = oAuthToken.toJson()
+        if asyncio.get_running_loop() == self.__hass.loop:
+            await self.__oAuthTokenStore.async_save(json)
+        else:
+            asyncio.run_coroutine_threadsafe(
+                self.__oAuthTokenStore.async_save(oAuthToken.toJson()), self.__hass.loop
+            ).result(timeout=2)
